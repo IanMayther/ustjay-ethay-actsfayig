@@ -1,4 +1,5 @@
 import os
+from typing import Text
 
 import requests
 from flask import Flask, send_file, Response
@@ -19,7 +20,20 @@ def get_fact():
 
 @app.route('/')
 def home():
-    return "FILL ME!"
+    fact = get_fact().lower()
+    data = {'input_text': fact}
+    response = requests.post('https://hidden-journey-62459.herokuapp.com/piglatinize/', data= data)
+    result  = requests.get(response.url)
+    soup = BeautifulSoup(result.content, "html.parser")
+    answer = soup.getText()[39:]
+    
+    print(fact[7:])
+    print(answer)
+
+    quote = "Fact: " + fact
+    latinize = "Latinized: " + answer
+    website = "Link: " + response.url
+    return '\n'.join([quote, latinize, website])
 
 
 if __name__ == "__main__":
